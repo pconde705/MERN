@@ -2,20 +2,27 @@
 const express = require('express');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy; // because we just need the strategy module in this case
-const keys = require('./config/keys');
+const keys = require('./config/keys.js');
 
 
 const app = express();
 
 passport.use(
-  new GoogleStrategy({
+  new GoogleStrategy(
+    {
     clientID: keys.googleClientID,
     clientSecret: keys.googleClientSecret,
     callbackURL: '/auth/google/callback'
-  }, (accessToken) => {
+    },
+    accessToken => {
       console.log(accessToken);
     }
   )
 );
 
-app.listen(5000);
+app.get('/auth/google', passport.authenticate('google', {
+  scope: ['profile', 'email']
+}));
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT);
