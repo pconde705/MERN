@@ -1,30 +1,11 @@
 // import express from 'express'; This syntax will be used for frontend not server side node
 const express = require('express');
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy; // because we just need the strategy module in this case
-const keys = require('./config/keys.js');
-
+require('./services/passport') // because we're not exporting anything from passport.js you can write it like this
 
 const app = express();
 
-passport.use(
-  new GoogleStrategy(
-    {
-    clientID: keys.googleClientID,
-    clientSecret: keys.googleClientSecret,
-    callbackURL: '/auth/google/callback'
-    },
-    (accessToken, refreshToken, profile, done) => {
-      console.log(accessToken)
-    }
-  )
-);
-
-app.get('/auth/google', passport.authenticate('google', {
-  scope: ['profile', 'email']
-}));
-
-app.get('/auth/google/callback', passport.authenticate('google'));
+require('./routes/authRoutes.js')(app); // we require the function and then immediately invokes the app function
+// doesn't have to be written like this, its simply refactoring. 
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT);
